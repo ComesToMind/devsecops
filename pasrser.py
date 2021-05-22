@@ -18,9 +18,12 @@ def remove_commons(element):
             del element['cve']
 
 error_message=str("No file extension has been found in a include/require function. This implies that some PHP code is not scanned by PHPCS.")
-with open('gl-sast-report.json') as f:
-    data = json.load(f)
-
+try:
+    with open('gl-sast-report.json') as f:
+        data = json.load(f)
+except IOError:
+    print("File not accessible")
+    exit(0)
 
 list_vuln = data["vulnerabilities"]
 data["vulnerabilities"] = [vulnerability for vulnerability in list_vuln if vulnerability['message'] != error_message]
@@ -34,8 +37,6 @@ if language == "php":
 if language == "javascript":
     for element in data["vulnerabilities"]:
         remove_commons(element)
-        if 'message' in element:
-            del element['message']
 if language == "dotnet":
     for element in data["vulnerabilities"]:
         remove_commons(element)
